@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 //import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -31,14 +32,14 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * 列表
+     * 查出所有分类和自分类，树状展示
      */
-    @RequestMapping("/list" )
+    @RequestMapping("product/list" )
      //@RequiresPermissions("product:category:list")
     public R list(@RequestParam Map<String, Object> params) {
-        PageUtils page = categoryService.queryPage(params);
+       List<CategoryEntity> list = categoryService.listWithTree();
 
-        return R.ok().put("page", page);
+        return R.ok().put("data", list);
     }
 
 
@@ -50,7 +51,7 @@ public class CategoryController {
     public R info(@PathVariable("catId" ) Long catId) {
             CategoryEntity category = categoryService.getById(catId);
 
-        return R.ok().put("category", category);
+        return R.ok().put("data", category);
     }
 
     /**
@@ -81,7 +82,9 @@ public class CategoryController {
     @RequestMapping("/delete" )
     // @RequiresPermissions("product:category:delete")
     public R delete(@RequestBody Long[] catIds) {
-            categoryService.removeByIds(Arrays.asList(catIds));
+            //删除之前要先检查是否被引用，如果被引用无法删除
+
+        categoryService.removeMenusByIds(Arrays.asList(catIds));
 
         return R.ok();
     }

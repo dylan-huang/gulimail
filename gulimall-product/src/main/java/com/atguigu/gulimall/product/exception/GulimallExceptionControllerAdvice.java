@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.product.exception;
 
+import com.atguigu.common.exception.BizCodeEnums;
 import com.atguigu.common.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -24,6 +25,10 @@ public class GulimallExceptionControllerAdvice {
         HashMap<String, String> map = new HashMap<>();
         BindingResult bindingResult = e.getBindingResult();
         bindingResult.getFieldErrors().forEach( item -> map.put(item.getField(),item.getDefaultMessage()));
-        return R.error(400,"数据校验错误").put("data",map);
+        return R.error(BizCodeEnums.VALID_EXCEPTION.getCode(),BizCodeEnums.VALID_EXCEPTION.getMsg()).put("data",map);
+    }
+    @ExceptionHandler(value = Throwable.class)
+    public R handleException(Throwable throwable){
+        return R.error(BizCodeEnums.UNKNOWN_EXCEPTION.getCode(),BizCodeEnums.UNKNOWN_EXCEPTION.getMsg());
     }
 }
